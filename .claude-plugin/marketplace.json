@@ -1,0 +1,40 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "instagram-stack",
+  "owner": {
+    "name": "Mehdi Jabry",
+    "url": "https://github.com/mehdijabry"
+  },
+  "metadata": {
+    "description": "Fifteen Instagram skills for Claude Code and Codex, merged from two MIT bundles, behind a publish gate that is enforced at runtime rather than documented."
+  },
+  "plugins": [
+    {
+      "name": "instagram-stack",
+      "source": "./",
+      "version": "1.0.0",
+      "description": "Fifteen Instagram skills: niche reading through Apify, caption and carousel writing against 26 documented hook formulas, reel and story scripting, a 199-entry anti-slop humaniser that returns its own replacements, profile scoring on a 12-criterion rubric, weekly planning, post-mortem auditing, and comment and reply drafting. Publishing passes an approval gate enforced in code: nothing reaches a provider without a live approval bound to the exact payload, and the bundle is read-only until armed from the launch environment. Drafting needs no keys, no accounts and no network.",
+      "author": {
+        "name": "Mehdi Jabry",
+        "url": "https://github.com/mehdijabry"
+      },
+      "homepage": "https://github.com/mehdijabry/instagram-stack",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "instagram",
+        "instagram-marketing",
+        "claude-skills",
+        "codex-skills",
+        "agent-skills",
+        "captions",
+        "carousel",
+        "reels",
+        "hooks",
+        "humanizer",
+        "approval-gate",
+        "content-engineering"
+      ]
+    }
+  ]
+}
