@@ -74,9 +74,49 @@ check_true("an unassessed criterion scores zero", result["assessed"] == 1)
 check("points are clamped to the maximum",
       corpus.score_profile({"name_field": 999})["score"], 12)
 
+# ---------------------------------------------------------------------------
+# Tier 0 must hold: drafting works on a machine with nothing installed.
+# ---------------------------------------------------------------------------
+print("\ntier 0 — no dependencies")
+import importlib  # noqa: E402
+
+
+class _BlockRequests:
+    """Make `import requests` fail, the way a bare machine would."""
+
+    def find_module(self, name, path=None):
+        return self if name == "requests" else None
+
+    def find_spec(self, name, path=None, target=None):
+        if name == "requests":
+            raise ImportError("requests is not installed (simulated)")
+        return None
+
+
+for name in [m for m in list(sys.modules) if m.startswith("lib") or m == "requests"]:
+    del sys.modules[name]
+sys.meta_path.insert(0, _BlockRequests())
+try:
+    bare = importlib.import_module("lib")
+    check_true("import lib succeeds without requests", True)
+    check_true("hook table still loads", len(bare.hooks()) == 26)
+    check_true("the rewriter still runs", bool(bare.desloppify("let us delve in")[0]))
+    card = bare.render_approval_card(kind="post", preview_text="draft",
+                                     target_url="https://www.instagram.com/x/")
+    check_true("the approval card still renders", "Approval token" in card)
+    try:
+        bare.PubloraClient
+        check_true("touching a network client without requests raises", False)
+    except ImportError:
+        check_true("touching a network client without requests raises", True)
+except ImportError as exc:
+    check_true(f"import lib succeeds without requests ({exc})", False)
+finally:
+    sys.meta_path.pop(0)
+
 if failures:
     print("\nFAILED")
     for f in failures:
         print(" -", f)
     sys.exit(1)
-print("\nall corpus checks passed")
+print("\nall corpus checks passed (tier 0 included)")

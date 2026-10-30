@@ -14,8 +14,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install check dependencies
-        run: pip install pyyaml
+      # Tier 0 is a promise: drafting works with nothing installed. It is
+      # checked on a bare interpreter, before anything is installed above it
+      # would mask.
+      - name: Tier 0 works with no dependencies
+        run: python3 -c "import sys; sys.path.insert(0,'.'); import lib; assert len(lib.hooks())==26; print('tier 0 ok')"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyyaml
 
       # The gate is the reason this bundle exists. If it stops holding, the
       # build stops, before anything else is even looked at.

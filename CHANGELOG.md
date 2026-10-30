@@ -21,6 +21,16 @@ First release. A merge of two MIT bundles, plus one thing neither had.
   `publish()` step around the gate, or if the arming flag becomes loadable from
   a `.env`.
 
+### Fixed (inherited from upstream A)
+- **Tier 0 did not actually work.** `lib/__init__.py` imported the Publora,
+  Apify and Pixfaro clients eagerly, and all three import `requests` at module
+  level — so `import lib` failed on a machine that had installed nothing, even
+  though the bundle advertises a no-dependency drafting tier. Upstream clearly
+  intended otherwise: `publish()` carries the comment *"Local import so
+  manual-tier users never need requests installed."* The clients are now
+  resolved on first use (PEP 562), and `tests/test_corpus.py` proves drafting
+  works with `requests` blocked.
+
 ### Changed
 - `lib/backend_selector.py` — the Publora sign-up link no longer carries the
   `utm_source` / `utm_medium` / `utm_campaign` parameters that attributed

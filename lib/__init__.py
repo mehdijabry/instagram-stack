@@ -10,6 +10,8 @@ describing it. Nothing reaches a third party without a live, payload-bound
 approval, and the bundle is read-only until it is armed from the launch
 environment.
 """
+from importlib import import_module
+
 from ._env import load_env
 
 # Load .env before any client reads os.environ. Note that the arming flag
@@ -18,9 +20,6 @@ from ._env import load_env
 load_env()
 
 from .url_parser import parse_instagram_url
-from .publora_client import PubloraClient, PubloraError
-from .pixfaro_client import PixfaroClient, PixfaroError
-from .apify_client import ApifyClient, ApifyError, ApifyAuthError
 from .approval import (
     ApprovalError,
     ApprovalRequired,
@@ -46,6 +45,41 @@ from .corpus import (
     slop_total,
     strip_invisible,
 )
+#: Network clients are loaded on first use, not on import. Three of them pull
+#: in `requests`, and the drafting half of this bundle promises to work with no
+#: dependencies at all — a promise `import lib` would otherwise break on a
+#: machine that never installed anything. Upstream imported them eagerly here
+#: while taking care to import them locally inside publish(); this closes the
+#: gap that left.
+_LAZY = {
+    "PubloraClient": ".publora_client",
+    "PubloraError": ".publora_client",
+    "PixfaroClient": ".pixfaro_client",
+    "PixfaroError": ".pixfaro_client",
+    "ApifyClient": ".apify_client",
+    "ApifyError": ".apify_client",
+    "ApifyAuthError": ".apify_client",
+}
+
+
+def __getattr__(name: str):
+    """PEP 562 hook: resolve a network client the first time it is touched."""
+    module = _LAZY.get(name)
+    if module is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    try:
+        return getattr(import_module(module, __name__), name)
+    except ImportError as exc:  # pragma: no cover - depends on the environment
+        raise ImportError(
+            f"{name} needs the optional dependencies. Run "
+            "`pip install -r requirements.txt`. Drafting works without them."
+        ) from exc
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(_LAZY))
+
+
 from .backend_selector import (
     active_backend,
     available_models,
