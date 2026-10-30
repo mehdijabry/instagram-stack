@@ -1,0 +1,25 @@
+{
+  "name": "instagram-stack",
+  "description": "15 Instagram skills for Claude Code and Codex, merged from two MIT bundles: niche reading via Apify, caption and carousel writing against 26 documented hook formulas, a 199-entry anti-slop humaniser that returns its own replacements, reel and story scripting, profile scoring on a 12-criterion rubric, weekly planning, and comment and reply drafting. Publishing goes through an approval gate that is enforced at runtime, not merely documented: nothing reaches a provider without a live, payload-bound approval, and the bundle is read-only until armed from the launch environment.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Mehdi Jabry",
+    "url": "https://github.com/mehdijabry"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/mehdijabry/instagram-stack",
+  "keywords": [
+    "instagram",
+    "instagram-marketing",
+    "claude-skills",
+    "codex-skills",
+    "agent-skills",
+    "captions",
+    "carousel",
+    "reels",
+    "hooks",
+    "humanizer",
+    "approval-gate",
+    "content-engineering"
+  ]
+}

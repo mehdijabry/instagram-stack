@@ -1,0 +1,62 @@
+Instagram Stack
+===============
+
+This bundle is a merge of two MIT-licensed projects. Nothing here was written
+from scratch where good work already existed upstream, and nothing was taken
+without saying so. Both upstreams remain the better place to follow the
+original work.
+
+Upstream A — sergebulaev/instagram-skills
+-----------------------------------------
+Copyright (c) 2026 Sergey Bulaev · MIT · https://github.com/sergebulaev/instagram-skills
+Content engineering by Creative Content Crafts (https://cccrafts.ai).
+
+Taken, substantially unchanged:
+  lib/_env.py                 the .env trust boundary
+  lib/publora_client.py       the Instagram media flow
+  lib/apify_client.py         the read layer
+  lib/pixfaro_client.py       the image layer
+  lib/url_parser.py           Instagram URL parsing
+  lib/backend_selector.py     backend routing  (two changes, below)
+  references/*.md             eight reference documents
+  scripts/check_*.py          eight repository checks
+  skills/ig-audience-insights, ig-caption-writer, ig-carousel-planner,
+  skills/ig-content-planner, ig-hashtag-strategist, ig-hook-extractor,
+  skills/ig-humanizer, ig-profile-optimizer, ig-repurposer
+
+Changed in lib/backend_selector.py:
+  1. approval.enforce() is called before any branch that reaches a provider.
+  2. The Publora sign-up link no longer carries the utm_source/utm_medium/
+     utm_campaign parameters that attributed sign-ups to the upstream author.
+     The link still works; this bundle simply takes no credit for the choice,
+     and the README names alternatives.
+
+Upstream B — Jakeschincariol/instagram-agent-skill
+--------------------------------------------------
+Copyright (c) 2026 Jake Schincariol · MIT · https://github.com/Jakeschincariol/instagram-agent-skill
+
+Taken, substantially unchanged:
+  data/hooks.json             26 hook formulas, each with its documented trap
+  data/slop.json              199 anti-slop entries across five classes
+  data/rubric.json            the 12-criterion profile rubric
+  skills/ig-reel, ig-story, ig-comment, ig-reply, ig-audit, ig-viral
+
+The three data files sat inside individual skills upstream and could not be
+reached from anywhere else. They are a library here (lib/corpus.py) so every
+skill scores hooks and strips slop from the same tables.
+
+Deliberately not carried over:
+  skills/ig-dm   Direct-message sequences. The skill is well written and the
+                 upstream guardrails are sound, but a bundle aimed at accounts
+                 a business depends on should not make DM prospecting easy to
+                 run at volume. Fetch it from upstream if you want it.
+
+New in this bundle
+------------------
+  lib/approval.py             the enforced gate (both upstreams documented one)
+  lib/corpus.py               the shared reference-table layer
+  scripts/check_approval_lock.py
+  tests/test_approval_gate.py
+
+Both upstreams are MIT, so this merge is permitted. Their copyright notices
+are preserved in LICENSE.

@@ -1,0 +1,58 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install check dependencies
+        run: pip install pyyaml
+
+      # The gate is the reason this bundle exists. If it stops holding, the
+      # build stops, before anything else is even looked at.
+      - name: Approval gate holds
+        run: python3 tests/test_approval_gate.py
+
+      - name: publish() cannot step around the gate
+        run: python3 scripts/check_approval_lock.py
+
+      - name: Shared tables load and rewrite correctly
+        run: python3 tests/test_corpus.py
+
+      - name: No secrets committed
+        run: python3 scripts/check_no_secrets.py
+
+      - name: Skill frontmatter parses and the count matches the manifest
+        run: python3 scripts/check_frontmatter.py
+
+      - name: Markdown references resolve
+        run: python3 scripts/check_markdown_references.py
+
+      - name: Untrusted-content rule present where data is read
+        run: python3 scripts/check_untrusted_rule.py
+
+      - name: Security boundaries intact
+        run: python3 scripts/check_security_boundaries.py
+
+      - name: Text encoding clean
+        run: python3 scripts/check_text_encoding.py
+
+      # NOTICE and CHANGELOG describe the parameters that were removed, so
+      # they are not scanned. Only the places a live link could hide are.
+      - name: No vendor attribution parameters in shipped code or docs
+        run: |
+          if grep -rn "utm_source\|utm_medium\|utm_campaign" \
+               lib skills references README.md SKILL.md ; then
+            echo "Attribution parameters found. This bundle takes no credit for a vendor choice."
+            exit 1
+          fi
+          echo "clean"
